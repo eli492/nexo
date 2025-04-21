@@ -36,15 +36,12 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Configurar sesiones con PostgreSQL
 app.use(session({
-  store: new pgSession({
-    pool: pool,
-    tableName: 'session'
-  }),
   secret: process.env.SESSION_SECRET || 'nexoom-secret',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Importante: cambia a false para evitar problemas con HTTPS
+    httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 horas
   }
 }));

@@ -112,11 +112,22 @@ exports.postLogin = async (req, res) => {
       email: user.email
     };
     
-    console.log("Sesión guardada:", req.session.user); // Añadir para depuración
-
-    // Redireccionar a dashboard
-    console.log("Redirigiendo a dashboard"); // Añadir para depuración
-    return res.redirect('/users/dashboard');
+    console.log("Sesión guardada:", req.session.user);
+    
+    // Guardar la sesión explícitamente antes de redireccionar
+    req.session.save((err) => {
+      if (err) {
+        console.error("Error al guardar sesión:", err);
+        return res.render('auth/login', {
+          title: 'Iniciar Sesión - NexoO&M',
+          errors: [{ msg: 'Error al iniciar sesión, inténtalo de nuevo' }],
+          formData: req.body
+        });
+      }
+      
+      console.log("Sesión guardada correctamente, redirigiendo a dashboard");
+      return res.redirect('/users/dashboard');
+    });
   } catch (error) {
     console.error('Error en login:', error);
     res.render('auth/login', {
