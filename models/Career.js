@@ -1,12 +1,11 @@
-// models/Career.js
-const { pool } = require('../config/db');
+const { query } = require('../config/db');
 
 class Career {
   // Obtener todas las carreras
   static async findAll() {
     try {
-      const [rows] = await pool.execute('SELECT * FROM carreras ORDER BY nombre');
-      return rows;
+      const result = await query('SELECT * FROM carreras ORDER BY nombre');
+      return result.rows;
     } catch (error) {
       throw new Error(`Error al obtener carreras: ${error.message}`);
     }
@@ -15,11 +14,11 @@ class Career {
   // Obtener una carrera por ID
   static async findById(id) {
     try {
-      const [rows] = await pool.execute(
-        'SELECT * FROM carreras WHERE id = ?', 
+      const result = await query(
+        'SELECT * FROM carreras WHERE id = $1', 
         [id]
       );
-      return rows.length ? rows[0] : null;
+      return result.rows.length ? result.rows[0] : null;
     } catch (error) {
       throw new Error(`Error al obtener carrera: ${error.message}`);
     }

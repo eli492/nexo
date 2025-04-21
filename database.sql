@@ -1,12 +1,13 @@
 -- Crear la base de datos
-CREATE DATABASE IF NOT EXISTS nexo_om_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- Este comando se debe ejecutar separadamente como superusuario
+-- CREATE DATABASE nexo_om_db WITH ENCODING 'UTF8';
 
--- Usar la base de datos
-USE nexo_om_db;
+-- Conectarse a la base de datos
+\c nexo_om_db;
 
 -- Tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
@@ -15,33 +16,34 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 -- Tabla de carreras
 CREATE TABLE IF NOT EXISTS carreras (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   descripcion TEXT
 );
 
 -- Tabla de materias
 CREATE TABLE IF NOT EXISTS materias (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   descripcion TEXT,
-  carrera_id INT NOT NULL,
+  carrera_id INTEGER NOT NULL,
   FOREIGN KEY (carrera_id) REFERENCES carreras(id) ON DELETE CASCADE
 );
 
 -- Tabla de recursos
 CREATE TABLE IF NOT EXISTS recursos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   titulo VARCHAR(150) NOT NULL,
   descripcion TEXT,
-  tipo ENUM('archivo', 'enlace') NOT NULL,
+  tipo VARCHAR(10) NOT NULL, -- PostgreSQL no usa ENUM como MySQL, usamos VARCHAR con CHECK
   url VARCHAR(255),
   archivo VARCHAR(255),
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  usuario_id INT NOT NULL,
-  materia_id INT NOT NULL,
+  usuario_id INTEGER NOT NULL,
+  materia_id INTEGER NOT NULL,
   FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  FOREIGN KEY (materia_id) REFERENCES materias(id) ON DELETE CASCADE
+  FOREIGN KEY (materia_id) REFERENCES materias(id) ON DELETE CASCADE,
+  CHECK (tipo IN ('archivo', 'enlace'))
 );
 
 -- Insertar algunas carreras de ejemplo

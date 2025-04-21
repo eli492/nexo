@@ -1,4 +1,4 @@
-const { pool } = require('../config/db');
+const { query } = require('../config/db');
 
 class Resource {
   // Crear un nuevo recurso
@@ -6,12 +6,12 @@ class Resource {
     const { titulo, descripcion, tipo, url, archivo, usuario_id, materia_id } = resourceData;
     
     try {
-      const [result] = await pool.execute(
-        'INSERT INTO recursos (titulo, descripcion, tipo, url, archivo, usuario_id, materia_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      const result = await query(
+        'INSERT INTO recursos (titulo, descripcion, tipo, url, archivo, usuario_id, materia_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
         [titulo, descripcion, tipo, url, archivo, usuario_id, materia_id]
       );
       
-      return { id: result.insertId, ...resourceData };
+      return { id: result.rows[0].id, ...resourceData };
     } catch (error) {
       throw new Error(`Error al crear recurso: ${error.message}`);
     }
@@ -20,17 +20,17 @@ class Resource {
   // Obtener un recurso por ID
   static async findById(id) {
     try {
-      const [rows] = await pool.execute(
-        `SELECT r.*, u.nombre as usuario_nombre, m.nombre as materia_nombre, c.nombre as carrera_nombre
+      const result = await query(
+        `SELECT r.*, u.nombre as usuario_nombre, m.nombre as materia_nombre, c.nombre as carrera_nombre, m.carrera_id as carrera_id
          FROM recursos r
          JOIN usuarios u ON r.usuario_id = u.id
          JOIN materias m ON r.materia_id = m.id
          JOIN carreras c ON m.carrera_id = c.id
-         WHERE r.id = ?`,
+         WHERE r.id = $1`,
         [id]
       );
       
-      return rows.length ? rows[0] : null;
+      return result.rows.length ? result.rows[0] : null;
     } catch (error) {
       throw new Error(`Error al obtener recurso: ${error.message}`);
     }
@@ -39,7 +39,7 @@ class Resource {
   // Obtener todos los recursos
   static async findAll() {
     try {
-      const [rows] = await pool.execute(
+      const result = await query(
         `SELECT r.*, u.nombre as usuario_nombre, m.nombre as materia_nombre, c.nombre as carrera_nombre
          FROM recursos r
          JOIN usuarios u ON r.usuario_id = u.id
@@ -48,7 +48,7 @@ class Resource {
          ORDER BY r.fecha_creacion DESC`
       );
       
-      return rows;
+      return result.rows;
     } catch (error) {
       throw new Error(`Error al obtener recursos: ${error.message}`);
     }
@@ -57,18 +57,18 @@ class Resource {
   // Obtener recursos por materia
   static async findBySubject(materiaId) {
     try {
-      const [rows] = await pool.execute(
+      const result = await query(
         `SELECT r.*, u.nombre as usuario_nombre, m.nombre as materia_nombre, c.nombre as carrera_nombre
          FROM recursos r
          JOIN usuarios u ON r.usuario_id = u.id
          JOIN materias m ON r.materia_id = m.id
          JOIN carreras c ON m.carrera_id = c.id
-         WHERE r.materia_id = ?
+         WHERE r.materia_id = $1
          ORDER BY r.fecha_creacion DESC`,
         [materiaId]
       );
       
-      return rows;
+      return result.rows;
     } catch (error) {
       throw new Error(`Error al obtener recursos por materia: ${error.message}`);
     }
@@ -77,18 +77,18 @@ class Resource {
   // Obtener recursos por carrera
   static async findByCareer(carreraId) {
     try {
-      const [rows] = await pool.execute(
+      const result = await query(
         `SELECT r.*, u.nombre as usuario_nombre, m.nombre as materia_nombre, c.nombre as carrera_nombre
          FROM recursos r
          JOIN usuarios u ON r.usuario_id = u.id
          JOIN materias m ON r.materia_id = m.id
          JOIN carreras c ON m.carrera_id = c.id
-         WHERE m.carrera_id = ?
+         WHERE m.carrera_id = $1
          ORDER BY r.fecha_creacion DESC`,
         [carreraId]
       );
       
-      return rows;
+      return result.rows;
     } catch (error) {
       throw new Error(`Error al obtener recursos por carrera: ${error.message}`);
     }
@@ -97,18 +97,18 @@ class Resource {
   // Obtener recursos por usuario
   static async findByUser(userId) {
     try {
-      const [rows] = await pool.execute(
+      const result = await query(
         `SELECT r.*, u.nombre as usuario_nombre, m.nombre as materia_nombre, c.nombre as carrera_nombre
          FROM recursos r
          JOIN usuarios u ON r.usuario_id = u.id
          JOIN materias m ON r.materia_id = m.id
          JOIN carreras c ON m.carrera_id = c.id
-         WHERE r.usuario_id = ?
+         WHERE r.usuario_id = $1
          ORDER BY r.fecha_creacion DESC`,
         [userId]
       );
       
-      return rows;
+      return result.rows;
     } catch (error) {
       throw new Error(`Error al obtener recursos por usuario: ${error.message}`);
     }
@@ -119,12 +119,12 @@ class Resource {
     const { titulo, descripcion, materia_id } = resourceData;
     
     try {
-      const [result] = await pool.execute(
-        'UPDATE recursos SET titulo = ?, descripcion = ?, materia_id = ? WHERE id = ?',
+      const result = await query(
+        'UPDATE recursos SET titulo = $1, descripcion = $2, materia_id = $3 WHERE id = $4',
         [titulo, descripcion, materia_id, id]
       );
       
-      return result.affectedRows > 0;
+      return result.rowCount > 0;
     } catch (error) {
       throw new Error(`Error al actualizar recurso: ${error.message}`);
     }
@@ -133,12 +133,12 @@ class Resource {
   // Eliminar un recurso
   static async delete(id) {
     try {
-      const [result] = await pool.execute(
-        'DELETE FROM recursos WHERE id = ?',
+      const result = await query(
+        'DELETE FROM recursos WHERE id = $1',
         [id]
       );
       
-      return result.affectedRows > 0;
+      return result.rowCount > 0;
     } catch (error) {
       throw new Error(`Error al eliminar recurso: ${error.message}`);
     }
@@ -149,18 +149,18 @@ class Resource {
     try {
       const searchTerm = `%${query}%`;
       
-      const [rows] = await pool.execute(
+      const result = await query(
         `SELECT r.*, u.nombre as usuario_nombre, m.nombre as materia_nombre, c.nombre as carrera_nombre
          FROM recursos r
          JOIN usuarios u ON r.usuario_id = u.id
          JOIN materias m ON r.materia_id = m.id
          JOIN carreras c ON m.carrera_id = c.id
-         WHERE r.titulo LIKE ? OR r.descripcion LIKE ?
+         WHERE r.titulo ILIKE $1 OR r.descripcion ILIKE $2
          ORDER BY r.fecha_creacion DESC`,
         [searchTerm, searchTerm]
       );
       
-      return rows;
+      return result.rows;
     } catch (error) {
       throw new Error(`Error al buscar recursos: ${error.message}`);
     }
