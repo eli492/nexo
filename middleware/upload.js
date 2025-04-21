@@ -1,10 +1,21 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Determinar la ruta de almacenamiento según el entorno
+const uploadDir = process.env.NODE_ENV === 'production' 
+  ? '/tmp/uploads' 
+  : path.join(__dirname, '../public/uploads');
+
+// Asegurarse de que la carpeta existe
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Configuración de almacenamiento
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../public/uploads'));
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     // Generar nombre único para el archivo
