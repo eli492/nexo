@@ -1,0 +1,165 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+    <div class="col">
+        <h1>Mi Panel</h1>
+        <p class="lead">Bienvenido/a, <%= user.nombre %></p>
+    </div>
+    <div class="col-auto">
+        <a href="/resources/create" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> Subir Recurso
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="/resources/create" class="list-group-item list-group-item-action">
+                        <i class="fas fa-upload me-2"></i> Subir Recurso
+                    </a>
+                    <a href="/resources" class="list-group-item list-group-item-action">
+                        <i class="fas fa-search me-2"></i> Explorar Recursos
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-edit me-2"></i> Editar Perfil
+                    </a>
+                    <a href="/users/change-password" class="list-group-item list-group-item-action">
+                        <i class="fas fa-key me-2"></i> Cambiar Contraseña
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Mis Recursos</h5>
+                <span class="badge bg-light text-dark rounded-pill"><%= userResources.length %> recursos</span>
+            </div>
+            <div class="card-body">
+                <% if (userResources.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Aún no has subido ningún recurso.</p>
+                        <a href="/resources/create" class="btn btn-primary mt-3">Subir mi primer recurso</a>
+                    </div>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Tipo</th>
+                                    <th>Materia</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% userResources.forEach(resource => { %>
+                                    <tr>
+                                        <td><a href="/resources/<%= resource.id %>"><%= resource.titulo %></a></td>
+                                        <td>
+                                            <% if (resource.tipo === 'archivo') { %>
+                                                <span class="badge bg-info text-dark">
+                                                    <i class="fas fa-file me-1"></i> Archivo
+                                                </span>
+                                            <% } else { %>
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-link me-1"></i> Enlace
+                                                </span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= resource.materia_nombre %></td>
+                                        <td><%= new Date(resource.fecha_creacion).toLocaleDateString() %></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="/resources/<%= resource.id %>" class="btn btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="/resources/<%= resource.id %>/edit" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button class="btn btn-outline-danger delete-resource" data-id="<%= resource.id %>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar este recurso? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejo de eliminación de recursos
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        let resourceIdToDelete;
+        
+        // Botones de eliminar
+        document.querySelectorAll('.delete-resource').forEach(btn => {
+            btn.addEventListener('click', function() {
+                resourceIdToDelete = this.dataset.id;
+                deleteModal.show();
+            });
+        });
+        
+        // Confirmar eliminación
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (resourceIdToDelete) {
+                fetch(`/resources/${resourceIdToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        deleteModal.hide();
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ha ocurrido un error al eliminar el recurso');
+                });
+            }
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %>

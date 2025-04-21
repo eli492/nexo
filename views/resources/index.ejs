@@ -1,0 +1,112 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+    <div class="col">
+        <% if (typeof searchQuery !== 'undefined') { %>
+            <h1>Resultados para: <%= searchQuery %></h1>
+            <p class="lead">Se encontraron <%= resources.length %> recursos</p>
+        <% } else if (typeof subject !== 'undefined') { %>
+            <h1>Recursos de <%= subject.nombre %></h1>
+            <p class="lead">Carrera: <%= subject.carrera_nombre %></p>
+        <% } else if (typeof career !== 'undefined') { %>
+            <h1>Recursos de <%= career.nombre %></h1>
+        <% } else { %>
+            <h1>Explorar Recursos</h1>
+            <p class="lead">Navega por todos los recursos disponibles</p>
+        <% } %>
+    </div>
+    <div class="col-auto">
+        <% if (user) { %>
+            <a href="/resources/create" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> Subir Recurso
+            </a>
+        <% } %>
+    </div>
+</div>
+
+<!-- Filtros de recursos -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Filtros</h5>
+            </div>
+            <div class="card-body">
+                <h6>Carreras</h6>
+                <div class="list-group mb-3">
+                    <% careers.forEach(career => { %>
+                        <a href="/resources/career/<%= career.id %>" class="list-group-item list-group-item-action">
+                            <%= career.nombre %>
+                        </a>
+                    <% }) %>
+                </div>
+                
+                <% if (typeof career !== 'undefined') { %>
+                    <h6>Materias de <%= career.nombre %></h6>
+                    <div class="list-group">
+                        <% subjects.filter(subject => subject.carrera_id === career.id).forEach(subject => { %>
+                            <a href="/resources/subject/<%= subject.id %>" class="list-group-item list-group-item-action">
+                                <%= subject.nombre %>
+                            </a>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <% if (resources.length === 0) { %>
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>No se encontraron recursos</h4>
+                    <% if (user) { %>
+                        <p>¡Sé el primero en compartir un recurso!</p>
+                        <a href="/resources/create" class="btn btn-primary mt-2">Subir Recurso</a>
+                    <% } else { %>
+                        <p>Regístrate para poder compartir recursos.</p>
+                        <a href="/register" class="btn btn-primary mt-2">Registrarse</a>
+                    <% } %>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="row">
+                <% resources.forEach(resource => { %>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">
+                                    <i class="fas fa-graduation-cap me-1"></i> <%= resource.carrera_nombre %> / 
+                                    <i class="fas fa-book me-1"></i> <%= resource.materia_nombre %>
+                                </span>
+                                <% if (resource.tipo === 'archivo') { %>
+                                    <span class="badge bg-info text-dark">
+                                        <i class="fas fa-file me-1"></i> Archivo
+                                    </span>
+                                <% } else { %>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-link me-1"></i> Enlace
+                                    </span>
+                                <% } %>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="/resources/<%= resource.id %>" class="text-decoration-none"><%= resource.titulo %></a></h5>
+                                <p class="card-text text-truncate"><%= resource.descripcion %></p>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i> <%= resource.usuario_nombre %>
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i> <%= new Date(resource.fecha_creacion).toLocaleDateString() %>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,140 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+    <div class="col">
+        <h1>Editar Recurso</h1>
+        <p class="lead">Actualiza la información de tu recurso</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Formulario de Edición</h4>
+            </div>
+            <div class="card-body">
+                <% if (errors.length > 0) { %>
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            <% errors.forEach(error => { %>
+                                <li><%= error.msg %></li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                <% } %>
+                
+                <form action="/resources/<%= resource.id %>/edit" method="POST">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título del Recurso *</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" value="<%= resource.titulo %>" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción *</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required><%= resource.descripcion %></textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="carrera_id" class="form-label">Carrera *</label>
+                            <select class="form-select" id="carrera_id" name="carrera_id" required>
+                                <option value="">-- Seleccionar Carrera --</option>
+                                <% careers.forEach(career => { %>
+                                    <option value="<%= career.id %>" <%= resource.carrera_id == career.id ? 'selected' : '' %>>
+                                        <%= career.nombre %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="materia_id" class="form-label">Materia *</label>
+                            <select class="form-select" id="materia_id" name="materia_id" required>
+                                <option value="">-- Primero selecciona una carrera --</option>
+                                <% subjects.forEach(subject => { %>
+                                    <option value="<%= subject.id %>" 
+                                            data-carrera="<%= subject.carrera_id %>"
+                                            <%= resource.materia_id == subject.id ? 'selected' : '' %>
+                                            style="display: none;">
+                                        <%= subject.nombre %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Recurso</label>
+                        <p class="form-control-plaintext">
+                            <% if (resource.tipo === 'archivo') { %>
+                                <span class="badge bg-info text-dark">
+                                    <i class="fas fa-file me-1"></i> Archivo
+                                </span>
+                                <small class="ms-2 text-muted">El archivo no se puede cambiar. Si deseas subir otro archivo, debes crear un nuevo recurso.</small>
+                            <% } else { %>
+                                <span class="badge bg-success">
+                                    <i class="fas fa-link me-1"></i> Enlace
+                                </span>
+                                <small class="ms-2 text-muted">El enlace no se puede cambiar. Si deseas cambiar el enlace, debes crear un nuevo recurso.</small>
+                            <% } %>
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Guardar Cambios
+                        </button>
+                        <a href="/resources/<%= resource.id %>" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filtrar materias por carrera seleccionada
+        const carreraSelect = document.getElementById('carrera_id');
+        const materiaSelect = document.getElementById('materia_id');
+        const materiaOptions = materiaSelect.querySelectorAll('option');
+        
+        function filterMaterias() {
+            const selectedCarrera = carreraSelect.value;
+            
+            // Ocultar todas las materias
+            materiaOptions.forEach(option => {
+                option.style.display = 'none';
+            });
+            
+            // Mostrar solo las materias de la carrera seleccionada
+            if (selectedCarrera) {
+                materiaOptions.forEach(option => {
+                    if (option.dataset.carrera === selectedCarrera || option.value === '') {
+                        option.style.display = '';
+                    }
+                });
+                
+                // Actualizar texto de opción por defecto
+                materiaOptions[0].textContent = '-- Seleccionar Materia --';
+            } else {
+                // Ninguna carrera seleccionada
+                materiaOptions[0].textContent = '-- Primero selecciona una carrera --';
+            }
+            
+            // Verificar si la materia actual sigue siendo válida
+            const currentMateriaOption = materiaSelect.querySelector(`option[value="${materiaSelect.value}"]`);
+            if (currentMateriaOption && currentMateriaOption.style.display === 'none') {
+                materiaSelect.value = '';
+            }
+        }
+        
+        // Inicializar filtro de materias
+        filterMaterias();
+        
+        // Actualizar materias al cambiar la carrera
+        carreraSelect.addEventListener('change', filterMaterias);
+    });
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,162 @@
+/* Estilos personalizados para NexoO&M */
+
+/* Estilos generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* Tarjetas y elementos con sombras */
+.card {
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+}
+
+.shadow {
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
+}
+
+/* Botones y enlaces */
+.btn {
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3c5dff;
+    border-color: #3c5dff;
+}
+
+.btn-primary:hover {
+    background-color: #2d4eeb;
+    border-color: #2d4eeb;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* Colores personalizados */
+.bg-primary {
+    background-color: #3c5dff !important;
+}
+
+.text-primary {
+    color: #3c5dff !important;
+}
+
+/* Jumbotron personalizado */
+.jumbotron {
+    background-color: #eaecff;
+    border-radius: 10px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+}
+
+/* Formularios */
+.form-control:focus {
+    border-color: #3c5dff;
+    box-shadow: 0 0 0 0.25rem rgba(60, 93, 255, 0.25);
+}
+
+/* Recursos y tarjetas */
+.card-resource {
+    height: 100%;
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+/* Iconos */
+.fa-3x {
+    color: #3c5dff;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .jumbotron {
+        padding: 2rem;
+    }
+}
+
+/* Estilos para los badges */
+.badge {
+    font-weight: 500;
+    padding: 0.4em 0.6em;
+}
+
+/* Animaciones */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Estilos para la navegación por pestañas */
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: #3c5dff;
+    border-bottom: 2px solid #3c5dff;
+    background-color: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #3c5dff;
+    border-bottom: 2px solid #eaecff;
+}
+
+/* Estilos para elementos de selección */
+.form-check-input:checked {
+    background-color: #3c5dff;
+    border-color: #3c5dff;
+}
+
+/* Efectos de transición */
+.transition {
+    transition: all 0.3s ease;
+}

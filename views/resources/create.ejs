@@ -1,0 +1,173 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+    <div class="col">
+        <h1>Subir Nuevo Recurso</h1>
+        <p class="lead">Comparte material educativo con la comunidad O&M</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Formulario de Subida</h4>
+            </div>
+            <div class="card-body">
+                <% if (errors.length > 0) { %>
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            <% errors.forEach(error => { %>
+                                <li><%= error.msg %></li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                <% } %>
+                
+                <form action="/resources/create" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título del Recurso *</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" value="<%= typeof formData !== 'undefined' ? formData.titulo : '' %>" required>
+                        <div class="form-text">Elige un título descriptivo para el recurso.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción *</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required><%= typeof formData !== 'undefined' ? formData.descripcion : '' %></textarea>
+                        <div class="form-text">Describe el contenido y la utilidad del recurso.</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="carrera_id" class="form-label">Carrera *</label>
+                            <select class="form-select" id="carrera_id" name="carrera_id" required>
+                                <option value="">-- Seleccionar Carrera --</option>
+                                <% careers.forEach(career => { %>
+                                    <option value="<%= career.id %>" <%= typeof formData !== 'undefined' && formData.carrera_id == career.id ? 'selected' : '' %>>
+                                        <%= career.nombre %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="materia_id" class="form-label">Materia *</label>
+                            <select class="form-select" id="materia_id" name="materia_id" required>
+                                <option value="">-- Primero selecciona una carrera --</option>
+                                <% subjects.forEach(subject => { %>
+                                    <option value="<%= subject.id %>" 
+                                            data-carrera="<%= subject.carrera_id %>"
+                                            <%= typeof formData !== 'undefined' && formData.materia_id == subject.id ? 'selected' : '' %>
+                                            style="display: none;">
+                                        <%= subject.nombre %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Tipo de Recurso *</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo" id="tipoArchivo" value="archivo" <%= typeof formData !== 'undefined' && formData.tipo === 'archivo' ? 'checked' : '' %> <%= typeof formData === 'undefined' ? 'checked' : '' %>>
+                            <label class="form-check-label" for="tipoArchivo">
+                                <i class="fas fa-file me-1"></i> Archivo (PDF, Word, Excel, etc.)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo" id="tipoEnlace" value="enlace" <%= typeof formData !== 'undefined' && formData.tipo === 'enlace' ? 'checked' : '' %>>
+                            <label class="form-check-label" for="tipoEnlace">
+                                <i class="fas fa-link me-1"></i> Enlace
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="archivoContainer" class="mb-3">
+                        <label for="archivo" class="form-label">Archivo *</label>
+                        <input type="file" class="form-control" id="archivo" name="archivo">
+                        <div class="form-text">Formatos permitidos: PDF, Word, Excel, PowerPoint, texto plano. Tamaño máximo: 5MB.</div>
+                    </div>
+                    
+                    <div id="urlContainer" class="mb-3" style="display: none;">
+                        <label for="url" class="form-label">URL del Recurso *</label>
+                        <input type="url" class="form-control" id="url" name="url" value="<%= typeof formData !== 'undefined' ? formData.url : '' %>" placeholder="https://ejemplo.com/recurso">
+                        <div class="form-text">Ingresa la URL completa del recurso (debe comenzar con http:// o https://).</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-cloud-upload-alt me-2"></i> Subir Recurso
+                        </button>
+                        <a href="/users/dashboard" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestión de tipo de recurso (archivo/enlace)
+        const tipoArchivo = document.getElementById('tipoArchivo');
+        const tipoEnlace = document.getElementById('tipoEnlace');
+        const archivoContainer = document.getElementById('archivoContainer');
+        const urlContainer = document.getElementById('urlContainer');
+        
+        function toggleResourceType() {
+            if (tipoArchivo.checked) {
+                archivoContainer.style.display = 'block';
+                urlContainer.style.display = 'none';
+            } else {
+                archivoContainer.style.display = 'none';
+                urlContainer.style.display = 'block';
+            }
+        }
+        
+        // Inicializar según el valor seleccionado
+        toggleResourceType();
+        
+        // Cambiar según la selección del usuario
+        tipoArchivo.addEventListener('change', toggleResourceType);
+        tipoEnlace.addEventListener('change', toggleResourceType);
+        
+        // Filtrar materias por carrera seleccionada
+        const carreraSelect = document.getElementById('carrera_id');
+        const materiaSelect = document.getElementById('materia_id');
+        const materiaOptions = materiaSelect.querySelectorAll('option');
+        
+        function filterMaterias() {
+            const selectedCarrera = carreraSelect.value;
+            
+            // Ocultar todas las materias
+            materiaOptions.forEach(option => {
+                option.style.display = 'none';
+            });
+            
+            // Mostrar solo las materias de la carrera seleccionada
+            if (selectedCarrera) {
+                materiaOptions.forEach(option => {
+                    if (option.dataset.carrera === selectedCarrera || option.value === '') {
+                        option.style.display = '';
+                    }
+                });
+                
+                // Actualizar texto de opción por defecto
+                materiaOptions[0].textContent = '-- Seleccionar Materia --';
+            } else {
+                // Ninguna carrera seleccionada
+                materiaOptions[0].textContent = '-- Primero selecciona una carrera --';
+            }
+            
+            // Resetear selección de materia
+            materiaSelect.value = '';
+        }
+        
+        // Inicializar filtro de materias
+        filterMaterias();
+        
+        // Actualizar materias al cambiar la carrera
+        carreraSelect.addEventListener('change', filterMaterias);
+    });
+</script>
+
+<%- include('../partials/footer') %>

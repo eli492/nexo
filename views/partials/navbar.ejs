@@ -1,0 +1,57 @@
+<!-- views/partials/navbar.ejs -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <strong>NexoO&M</strong>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resources">Explorar Recursos</a>
+                </li>
+                <% if (user) { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resources/create">Subir Recurso</a>
+                </li>
+                <% } %>
+            </ul>
+            
+            <!-- Buscador -->
+            <form class="d-flex me-3" action="/resources/search" method="GET">
+                <input class="form-control me-2" type="search" name="q" placeholder="Buscar recursos..." aria-label="Buscar">
+                <button class="btn btn-outline-light" type="submit">Buscar</button>
+            </form>
+            
+            <!-- Menú de usuario -->
+            <ul class="navbar-nav">
+                <% if (user) { %>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-1"></i><%= user.nombre %>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/users/dashboard">Mi Panel</a></li>
+                        <li><a class="dropdown-item" href="/users/profile">Mi Perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/logout">Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+                <% } else { %>
+                <li class="nav-item">
+                    <a class="btn btn-outline-light me-2" href="/login">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary" href="/register">Registrarse</a>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,100 @@
+<%- include('./partials/header') %>
+
+<div class="jumbotron bg-light p-5 rounded">
+    <div class="container text-center">
+        <h1 class="display-4">NexoO&M</h1>
+        <p class="lead">Plataforma Colaborativa de Recursos Educativos para la Universidad O&M</p>
+        <p>Un espacio donde compartir y acceder a recursos educativos organizados por carreras y materias.</p>
+        <div class="mt-4">
+            <% if (!user) { %>
+                <a href="/register" class="btn btn-primary btn-lg me-2">Registrarse</a>
+                <a href="/login" class="btn btn-outline-primary btn-lg">Iniciar Sesión</a>
+            <% } else { %>
+                <a href="/resources" class="btn btn-primary btn-lg me-2">Explorar Recursos</a>
+                <a href="/resources/create" class="btn btn-success btn-lg">Subir Recurso</a>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-share-alt fa-3x text-primary mb-3"></i>
+                <h3 class="card-title">Comparte</h3>
+                <p class="card-text">Sube documentos y enlaces útiles para tus compañeros y profesores.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                <h3 class="card-title">Encuentra</h3>
+                <p class="card-text">Localiza fácilmente recursos educativos organizados por carreras y materias.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                <h3 class="card-title">Aprende</h3>
+                <p class="card-text">Accede a material complementario para mejorar tu formación académica.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center my-5">
+    <h2>¿Cómo funciona?</h2>
+    <div class="row mt-4">
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 bg-light h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <h3 class="mb-0">1</h3>
+                    </div>
+                    <h5>Regístrate</h5>
+                    <p class="small">Crea una cuenta para acceder a todas las funcionalidades.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 bg-light h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <h3 class="mb-0">2</h3>
+                    </div>
+                    <h5>Explora</h5>
+                    <p class="small">Navega por recursos clasificados por carreras y materias.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 bg-light h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <h3 class="mb-0">3</h3>
+                    </div>
+                    <h5>Descarga</h5>
+                    <p class="small">Accede a documentos y enlaces compartidos por otros usuarios.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 bg-light h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <h3 class="mb-0">4</h3>
+                    </div>
+                    <h5>Contribuye</h5>
+                    <p class="small">Sube tus propios recursos para ayudar a otros estudiantes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>
