@@ -81,6 +81,9 @@ exports.postLogin = async (req, res) => {
   try {
     // Buscar usuario por email
     const user = await User.findByEmail(req.body.email);
+    
+    console.log("Usuario encontrado:", user); // Añadir para depuración
+    
     if (!user) {
       return res.render('auth/login', {
         title: 'Iniciar Sesión - NexoO&M',
@@ -91,6 +94,9 @@ exports.postLogin = async (req, res) => {
 
     // Verificar contraseña
     const isMatch = await User.validatePassword(req.body.password, user.password);
+    
+    console.log("Contraseña válida:", isMatch); // Añadir para depuración
+    
     if (!isMatch) {
       return res.render('auth/login', {
         title: 'Iniciar Sesión - NexoO&M',
@@ -105,9 +111,12 @@ exports.postLogin = async (req, res) => {
       nombre: user.nombre,
       email: user.email
     };
+    
+    console.log("Sesión guardada:", req.session.user); // Añadir para depuración
 
     // Redireccionar a dashboard
-    res.redirect('/users/dashboard');
+    console.log("Redirigiendo a dashboard"); // Añadir para depuración
+    return res.redirect('/users/dashboard');
   } catch (error) {
     console.error('Error en login:', error);
     res.render('auth/login', {
